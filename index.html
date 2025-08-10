@@ -5,7 +5,11 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>React Chat App</title>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://i.pravatar.cc https://freeimage.host;">
+    <meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  img-src 'self' https://i.pravatar.cc https://freeimage.host;
+  style-src 'self' 'unsafe-inline';
+  connect-src *;">
   </head>
   <body>
     <div id="root"></div>

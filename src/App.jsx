@@ -1,35 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Chat from "./pages/Chat";
+import Profile from "./pages/Profile";
+import SideNav from "./components/SideNav";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { user } = useAuth();
+
+  const ProtectedRoute = ({ children }) => {
+    if (!user) return <Navigate to="/login" replace />;
+    return (
+      <div className="flex">
+        <SideNav />
+        <div className="flex-1 p-4">{children}</div>
+      </div>
+    );
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <Routes>
+        {/* Only allow access to Register & Login if not logged in */}
+        <Route
+          path="/register"
+          element={!user ? <Register /> : <Navigate to="/chat" replace />}
+        />
+        <Route
+          path="/login"
+          element={!user ? <Login /> : <Navigate to="/chat" replace />}
+        />
+        {/* Protected routes */}
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute>
+              <Chat />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        {/* Redirect any unknown route */}
+        <Route
+          path="*"
+          element={<Navigate to={user ? "/chat" : "/login"} replace />}
+        />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

@@ -1,0 +1,94 @@
+/* Chat.css */
+div {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+  text-align: center;
+  color: #222;
+  margin-bottom: 1rem;
+}
+
+select {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.message-list {
+  border: 1px solid #ccc;
+  min-height: 400px;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+  margin-bottom: 1rem;
+}
+
+.message {
+  margin: 0.5rem 0;
+  max-width: 70%;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  word-wrap: break-word;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.message.user {
+  background-color: #c3f0c3;
+  margin-left: auto;
+  text-align: right;
+}
+
+.message.other {
+  background-color: #eee;
+  margin-right: auto;
+  text-align: left;
+}
+
+.message strong {
+  display: block;
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 0.3rem;
+}
+
+form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+input[type="text"] {
+  flex-grow: 1;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  transition: border-color 0.2s ease;
+}
+
+input[type="text"]:focus {
+  border-color: #4a90e2;
+  outline: none;
+}
+
+button {
+  padding: 0.7rem 1.5rem;
+  background-color: #4a90e2;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #357abd;
+}
