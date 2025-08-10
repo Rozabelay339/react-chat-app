@@ -1,80 +1,69 @@
 import axios from "axios";
 
-
 const API_BASE = "https://chatify-api.up.railway.app";
 
+// Skapa en axios-instans för gemensamma inställningar
+const axiosInstance = axios.create({
+  baseURL: API_BASE,
+  withCredentials: true, // Viktigt för att cookies ska skickas med
+});
 
 export const api = {
-  // ✅ KORREKT VERSION – använder axios
+  // 1. Hämta CSRF-token
   getCsrf: () =>
-    axios.patch(`${API_BASE}/csrf`, {}, {
-      withCredentials: true,
-    }),
+    axiosInstance.get("/csrf"), // GET istället för PATCH
 
-
+  // 2. Registrera användare
   register: ({ username, email, avatar, password, csrfToken }) =>
-    fetch(`${API_BASE}/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": csrfToken,
-      },
-      credentials: "include",
-      body: JSON.stringify({ username, email, avatar, password }),
-    }),
-
-
-   login: ({ username, password, csrfToken }) =>
-    axios.post(
-      `${API_BASE}/auth/token`,
-      { username, password },
+    axiosInstance.post(
+      "/auth/register",
+      { username, email, avatar, password },
       {
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken,
-        },
-        withCredentials: true,
+        headers: { "X-CSRF-Token": csrfToken },
       }
     ),
 
+  // 3. Logga in
+  login: ({ username, password, csrfToken }) =>
+    axiosInstance.post(
+      "/auth/token",
+      { username, password },
+      {
+        headers: { "X-CSRF-Token": csrfToken },
+      }
+    ),
+
+  // 4. Hämta meddelanden
   getMessages: (token, conversationId) =>
-    fetch(`${API_BASE}/messages?conversationId=${conversationId}`, {
+    axiosInstance.get(`/messages?conversationId=${conversationId}`, {
       headers: { Authorization: `Bearer ${token}` },
     }),
 
+  // 5. Skicka meddelande
   postMessage: (token, message, conversationId) =>
-    fetch(`${API_BASE}/messages`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message, conversationId }),
+    axiosInstance.post(
+      "/messages",
+      { message, conversationId },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    ),
+
+  // 6. Radera meddelande
+  deleteMessage: (token, messageId) =>
+    axiosInstance.delete(`/messages/${messageId}`, {
+      headers: { Authorization: `Bearer ${token}` },
     }),
 
-    deleteMessage: (token, messageId) =>
-  fetch(`${API_BASE}/messages/${messageId}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
-  }),
-
-
-
+  // 7. Uppdatera användare
   updateUser: (token, userData) =>
-    fetch(`${API_BASE}/user`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
+    axiosInstance.put("/user", userData, {
+      headers: { Authorization: `Bearer ${token}` },
     }),
 
+  // 8. Radera användare
   deleteUser: (token, userId) =>
-    fetch(`${API_BASE}/users/${userId}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    axiosInstance.delete(`/users/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
     }),
 };
