@@ -1,94 +1,161 @@
-/* Chat.css */
-div {
-  max-width: 800px;
-  margin: 2rem auto;
+.chat-page {
+  display: flex;
+  height: 100vh;
+}
+
+.conversations {
+  width: 260px;
+  background: #8ec5e5;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.conversations-header {
   padding: 1rem;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  border-bottom: 1px solid #ddd;
+  
 }
 
-h2 {
-  text-align: center;
-  color: #222;
-  margin-bottom: 1rem;
+.conversations ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  overflow-y: auto;
+
 }
 
-select {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+.conversations li {
+  border-bottom: 1px solid #8ec5e5;
+}
+
+.conversation-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #8ec5e5;
+  border: none;
+  text-align: left;
   cursor: pointer;
 }
 
-.message-list {
-  border: 1px solid #ccc;
-  min-height: 400px;
-  padding: 1rem;
-  border-radius: 8px;
-  overflow-y: auto;
-  background-color: #f9f9f9;
-  margin-bottom: 1rem;
+.conversation-btn:hover {
+  background: #e6f2ff;
 }
 
-.message {
-  margin: 0.5rem 0;
-  max-width: 70%;
-  padding: 0.7rem 1rem;
-  border-radius: 10px;
-  word-wrap: break-word;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+.conversation-btn.active {
+  background: #6098bd;
+  color: white;
+  font-weight: bold;
 }
 
-.message.user {
-  background-color: #c3f0c3;
-  margin-left: auto;
-  text-align: right;
-}
-
-.message.other {
-  background-color: #eee;
-  margin-right: auto;
-  text-align: left;
-}
-
-.message strong {
-  display: block;
-  font-size: 0.85rem;
-  color: #555;
-  margin-bottom: 0.3rem;
-}
-
-form {
+.invite-user {
+  padding: 0.75rem;
+  border-top: 1px solid #8ec5e5;
   display: flex;
   gap: 0.5rem;
 }
 
-input[type="text"] {
-  flex-grow: 1;
-  padding: 0.7rem 1rem;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid #bbb;
-  transition: border-color 0.2s ease;
+.invite-user input {
+  flex: 1;
+  padding: 0.4rem;
+  border: 1px solid #8ec5e5;
+  border-radius: 4px;
 }
 
-input[type="text"]:focus {
-  border-color: #4a90e2;
+.invite-user button {
+  padding: 0.4rem 0.6rem;
+  background: #81adcb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat h3 {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  background: #cce4f2;
+}
+
+.messages-list {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background: #cce4f2;
+}
+
+.message {
+  margin-bottom: 0.5rem;
+  display: flex;
+}
+
+.message.own {
+  justify-content: flex-end;
+}
+
+.message-bubble {
+  max-width: 60%;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  background: #e0e0e0;
+}
+
+.message.own .message-bubble {
+  background: #b2d4ea;
+  color: white;
+}
+
+.message-user {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-bottom: 0.25rem;
+}
+
+.message-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.message-actions {
+  margin-top: 0.25rem;
+  text-align: right;
+}
+
+.message-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+.send-message-form {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
+
+.send-message-form input {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
   outline: none;
 }
 
-button {
-  padding: 0.7rem 1.5rem;
-  background-color: #4a90e2;
-  border: none;
-  border-radius: 8px;
+.send-message-form button {
+  padding: 0 1rem;
+  background: #77abce;
   color: white;
-  font-weight: 600;
+  border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #357abd;
+.send-message-form button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
+

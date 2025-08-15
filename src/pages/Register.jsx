@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
-import './Register.css';
-
+import "./Register.css";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -12,50 +11,55 @@ export default function Register() {
   const [feedback, setFeedback] = useState("");
   const navigate = useNavigate();
 
-
   const handleRegister = async (e) => {
     e.preventDefault();
-
+    setFeedback("");
 
     try {
-      // ✅ Hämta CSRF-token
+      // 1️⃣ Hämta CSRF-token direkt innan registrering
       const csrfRes = await api.getCsrf();
-      const csrfToken = csrfRes.data.csrfToken;
+      const csrfToken = csrfRes.data?.csrfToken;
 
-
-      // ✅ Skicka register-anrop
-      const res = await api.register({
-        username,
-        email,
-        avatar,
-        password,
-        csrfToken,
-      });
-
-
-      const data = await res.json();
-
-
-      if (!res.ok) {
-        const isDuplicate = data.detail === "Username or email already exists";
-        setFeedback(isDuplicate ? "Användarnamnet eller e-posten finns redan." : data.detail);
+      if (!csrfToken) {
+        setFeedback("Kunde inte hämta CSRF-token.");
         return;
       }
 
+      // 2️⃣ Logga exakt vad vi skickar
+      const payload = {
+        username: username.trim(),
+        email: email.trim(),
+        avatar: avatar.trim(),
+        password: password.trim(),
+        csrfToken,
+      };
+      console.log("📦 Register payload:", payload);
+
+      // 3️⃣ Skicka register-anrop
+      const res = await api.register(payload);
+      console.log("✅ Register response:", res.data);
 
       setFeedback("Registrering lyckades! Du skickas vidare...");
       setTimeout(() => navigate("/login"), 1500);
+
     } catch (err) {
-      console.error("Fel vid registrering:", err);
-      setFeedback("Tekniskt fel vid registrering.");
+      console.error("❌ Fel vid registrering:", err);
+
+      // Visa backendens felmeddelande om det finns
+      const backendError =
+        err.response?.data?.error || err.response?.data?.detail || null;
+
+      if (backendError) {
+        setFeedback(`Fel från servern: ${backendError}`);
+      } else {
+        setFeedback("Tekniskt fel vid registrering.");
+      }
     }
   };
-
 
   return (
     <form onSubmit={handleRegister} className="register-form">
       <h2>Registrera</h2>
-
 
       <input
         type="text"
@@ -85,13 +89,12 @@ export default function Register() {
         required
       />
 
-
-      {avatar && <img src={avatar} alt="avatar preview" className="avatar-preview" />}
-
+      {avatar && (
+        <img src={avatar} alt="avatar preview" className="avatar-preview" />
+      )}
 
       <button type="submit">Registrera</button>
       {feedback && <p className="feedback">{feedback}</p>}
     </form>
   );
 }
-

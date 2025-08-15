@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@sentry/react": "^9.44.2",
+    "@sentry/react": "^9.46.0",
     "@sentry/tracing": "^7.120.4",
     "axios": "^1.10.0",
     "dompurify": "^3.2.6",
