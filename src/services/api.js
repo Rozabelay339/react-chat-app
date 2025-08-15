@@ -1,4 +1,3 @@
-// src/services/api.js
 import axios from 'axios'
 import * as Sentry from '@sentry/react'
 
@@ -9,7 +8,7 @@ const axiosInstance = axios.create({
   withCredentials: true,
 })
 
-// Log all API errors to Sentry
+
 axiosInstance.interceptors.response.use(
   (res) => res,
   (error) => {
@@ -18,7 +17,6 @@ axiosInstance.interceptors.response.use(
   }
 )
 
-// Hjälpare för att normalisera user-objekt (Swagger använder userId)
 export const normalizeUser = (u) => ({
   id: u?.userId ?? u?.id ?? null,
   username: u?.username ?? '',
@@ -27,11 +25,11 @@ export const normalizeUser = (u) => ({
 })
 
 export const api = {
-  // CSRF
+
   getCsrf: () => axiosInstance.patch('/csrf', {}),
   clearCsrf: () => axiosInstance.delete('/csrf'),
 
-  // Auth
+  
   register: ({ username, email, avatar, password, csrfToken }) =>
     axiosInstance.post('/auth/register', { username, email, avatar, password, csrfToken }),
 
@@ -57,7 +55,7 @@ export const api = {
   updateUser: (token, userId, updatedData) =>
     axiosInstance.put(
       '/user',
-      { userId, updatedData }, // 🔴 Viktigt: matchar Swagger-body
+      { userId, updatedData }, 
       { headers: { Authorization: `Bearer ${token}` } }
     ),
 
@@ -66,7 +64,7 @@ export const api = {
       headers: { Authorization: `Bearer ${token}` },
     }),
 
-  // Conversations
+
   getConversations: (token) =>
     axiosInstance.get('/conversations', {
       headers: { Authorization: `Bearer ${token}` },

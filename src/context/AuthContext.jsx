@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }) => {
     }
   })
 
-  // Sync localStorage + Sentry user
   useEffect(() => {
     if (user?.token) {
       localStorage.setItem('token', user.token)
@@ -47,7 +46,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await api.clearCsrf() // valfritt men nice att städa
+      await api.clearCsrf() 
     } catch (_) {}
     Sentry.addBreadcrumb({ category: 'auth', message: 'logout', level: 'info' })
     setUser(null)

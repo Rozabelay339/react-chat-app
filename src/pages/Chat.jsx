@@ -1,4 +1,3 @@
-// src/pages/Chat.jsx
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api, normalizeUser } from '../services/api';
