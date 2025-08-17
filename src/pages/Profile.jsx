@@ -1,105 +1,213 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { api } from '../services/api'
-import * as Sentry from '@sentry/react'
+import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
+import * as Sentry from '@sentry/react';
+import './Chat.css';
 
-export default function Profile() {
-  const { user, logout, setUser } = useAuth()
-  const [username, setUsername] = useState(user?.username || '')
-  const [email, setEmail] = useState(user?.email || '')
-  const [avatar, setAvatar] = useState(user?.avatar || 'https://i.pravatar.cc/150')
-  const [feedback, setFeedback] = useState('')
-  const [confirmText, setConfirmText] = useState('')
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    setUsername(user?.username || '')
-    setEmail(user?.email || '')
-    setAvatar(user?.avatar || 'https://i.pravatar.cc/150')
-  }, [user])
-
-const handleSave = async (e) => {
-  e.preventDefault()
-  setFeedback('')
-  try {
-    const res = await api.updateUser(user.token, user.id, {
-      username: username.trim(),
-      email: email.trim(),
-      avatar: avatar.trim(),
-    })
-    
-    setUser((prev) => ({ ...prev, username, email, avatar }))
-    setFeedback('Profil uppdaterad ')
-    Sentry.addBreadcrumb({
-      category: 'profile',
-      message: 'update success',
-      level: 'info',
-      data: res.data
-    })
-  } catch (err) {
-    const msg = err.response?.data?.detail || err.response?.data?.error || 'Tekniskt fel'
-    setFeedback(`Fel: ${msg}`)
-    Sentry.captureException(err)
-  }
+function sanitize(str) {
+  return String(str).replace(/[<>]/g, (m) => (m === '<' ? '&lt;' : '&gt;')).trim();
 }
 
+export default function Chat() {
+  const { user } = useAuth();
+  const token = user?.token;
 
-  const handleDelete = async () => {
-    if (confirmText !== 'DELETE') {
-      setFeedback("Skriv exakt 'DELETE' i bekräftelsefältet för att radera.")
-      return
-    }
+  const [activeId, setActiveId] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const [inviteUserId, setInviteUserId] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [userCache, setUserCache] = useState({});
+  const [conversations, setConversations] = useState([]); // 👈 alla konversationer
+
+  // --- hämta användarinfo ---
+  const fetchUser = async (userId) => {
+    if (userCache[userId]) return userCache[userId];
     try {
-      await api.deleteUser(user.token, user.id)
-      await logout()
-      navigate('/login')
+      const res = await api.getUser(token, userId);
+      const username = res.data.username;
+      setUserCache((prev) => ({ ...prev, [userId]: username }));
+      return username;
     } catch (err) {
-      const msg = err.response?.data?.detail || err.response?.data?.error || 'Tekniskt fel'
-      setFeedback(`Radering misslyckades: ${msg}`)
-      Sentry.captureException(err)
+      Sentry.captureException(err);
+      return userId;
     }
-  }
+  };
+
+  // --- hämta alla konversationer ---
+  const fetchConversations = async () => {
+    if (!token) return;
+    try {
+      const res = await api.getConversations(token);
+      setConversations(res.data || []); // 👈 lagra listan
+    } catch (err) {
+      setFeedback('Kunde inte hämta konversationer');
+      Sentry.captureException(err);
+    }
+  };
+
+  // --- hämta meddelanden ---
+  const fetchMessages = async () => {
+    if (!token || !activeId) return;
+    try {
+      const res = await api.getMessages(token, activeId);
+      const msgs = Array.isArray(res.data) ? res.data : [];
+
+      for (const m of msgs) {
+        if (!userCache[m.userId]) {
+          await fetchUser(m.userId);
+        }
+      }
+
+      setMessages(msgs);
+    } catch (err) {
+      setFeedback('Kunde inte hämta meddelanden');
+      Sentry.captureException(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchConversations(); // 👈 hämta när sidan laddas
+  }, [token]);
+
+  useEffect(() => {
+    if (activeId) fetchMessages();
+  }, [activeId]);
+
+  // --- skapa ny konversation ---
+  const handleNewConversation = () => {
+    const newId = crypto.randomUUID();
+    setActiveId(newId);
+    setMessages([]);
+    setFeedback(`Ny konversation skapad: ${newId}`);
+  };
+
+  // --- skicka nytt meddelande ---
+  const handleSend = async (e) => {
+    e.preventDefault();
+    const clean = sanitize(text);
+    if (!clean || !activeId) return;
+    try {
+      await api.postMessage(token, clean, activeId);
+      setText('');
+      fetchMessages();
+    } catch (err) {
+      setFeedback('Kunde inte skicka meddelande');
+      Sentry.captureException(err);
+    }
+  };
+
+  // --- ta bort meddelande ---
+  const handleDelete = async (msgId) => {
+    try {
+      await api.deleteMessage(token, msgId);
+      setMessages((prev) => prev.filter((m) => m.id !== msgId));
+    } catch (err) {
+      setFeedback('Kunde inte ta bort meddelande');
+      Sentry.captureException(err);
+    }
+  };
+
+  // --- bjuda in användare ---
+  const handleInvite = async () => {
+    if (!inviteUserId || !activeId) return;
+    try {
+      await api.inviteUser(token, inviteUserId, activeId);
+      setFeedback(`Inbjudan skickad till användare ${inviteUserId}`);
+      setInviteUserId('');
+    } catch (err) {
+      setFeedback('Kunde inte skicka inbjudan');
+      Sentry.captureException(err);
+    }
+  };
 
   return (
-    <div className="profile-page">
-      <h2>Profile</h2>
-      <form onSubmit={handleSave} className="profile-form">
-        <label>
-          Username
-          <input value={username} onChange={(e) => setUsername(e.target.value)} required />
-        </label>
-        <label>
-          Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        </label>
-        <label>
-          Avatar URL
-          <input type="url" value={avatar} onChange={(e) => setAvatar(e.target.value)} />
-        </label>
+    <div className="chat-page">
+      <aside className="conversations">
+        <h3>Konversationer</h3>
+        <button onClick={handleNewConversation}>➕ Ny konversation</button>
 
-        {avatar && (
-          <div className="avatar-preview">
-            <img src={avatar} alt="avatar preview" />
+        {/* lista över alla konversationer */}
+        {conversations.length > 0 && (
+          <ul>
+            {conversations.map((conv) => (
+              <li key={conv.id}>
+                {conv.id}{' '}
+                <button onClick={() => setActiveId(conv.id)}>Öppna</button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* invites */}
+        {Array.isArray(user?.invites) && user.invites.length > 0 && (
+          <div className="invites-list">
+            <h4>Mina inbjudningar</h4>
+            <ul>
+              {user.invites.map((id) => (
+                <li key={id}>
+                  {id} <button onClick={() => setActiveId(id)}>Anslut</button>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 
-        <button type="submit">Spara</button>
-      </form>
+        {activeId && (
+          <div className="invite">
+            <input
+              placeholder="User ID att bjuda in"
+              value={inviteUserId}
+              onChange={(e) => setInviteUserId(e.target.value)}
+            />
+            <button onClick={handleInvite}>Bjud in</button>
+          </div>
+        )}
+      </aside>
 
-      <div className="danger-zone" style={{ marginTop: 24 }}>
-        <p>Skriv <code>DELETE</code> för att bekräfta radering konto.</p>
-        <input
-          placeholder="DELETE"
-          value={confirmText}
-          onChange={(e) => setConfirmText(e.target.value)}
-        />
-        <button onClick={handleDelete} style={{ background: 'crimson', color: '#fff' }}>
-          Radera konto
-        </button>
-      </div>
+      <section className="chat">
+        {!activeId && <p>Välj eller skapa en konversation för att börja.</p>}
 
-      {feedback && <p className="feedback">{feedback}</p>}
+        {activeId && (
+          <>
+            <div className="messages-list">
+              {messages.map((m) => {
+                const senderName =
+                  m.userId === user?.id
+                    ? user?.username
+                    : userCache[m.userId] || m.userId;
+
+                return (
+                  <div
+                    key={m.id}
+                    className={`message-row ${m.userId === user?.id ? 'own' : 'other'}`}
+                  >
+                    <div className="bubble">
+                      <strong>{senderName}</strong>
+                      <div dangerouslySetInnerHTML={{ __html: sanitize(m.text) }} />
+                      {m.userId === user?.id && (
+                        <button onClick={() => handleDelete(m.id)}>🗑️</button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+              {messages.length === 0 && <p>Inga meddelanden</p>}
+            </div>
+
+            <form onSubmit={handleSend} className="send-form">
+              <input
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Skriv ett meddelande..."
+              />
+              <button type="submit">Skicka</button>
+            </form>
+          </>
+        )}
+
+        {feedback && <p className="feedback">{feedback}</p>}
+      </section>
     </div>
-  )
+  );
 }

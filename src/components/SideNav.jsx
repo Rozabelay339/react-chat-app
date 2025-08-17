@@ -23,7 +23,7 @@ export default function SideNav() {
 
       <nav className="sidenav-links">
         <NavLink to="/profile">👤 Profile</NavLink>
-        <NavLink to="/chat">💬 Chat</NavLink> 
+        <NavLink to="/chat"> 💬 Chat</NavLink> 
       </nav>
 
       <div className="sidenav-footer">

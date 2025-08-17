@@ -1,27 +1,29 @@
 .sidenav {
-  width: 220px;
+  width: 100%;
   background-color: #5eacd9;
-  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
   display: flex;
-  flex-direction: column;
-  padding-top: 1rem;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.5rem 1rem;
 }
 
 .sidenav-header {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid #ddd;
+  padding: 0.5rem 1rem;
+  border-right: 1px solid #ddd;
+  margin-right: 1rem;
 }
 
 .sidenav-header img {
-  width: 70px;
-  height: 70px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #ccc;
-  margin-bottom: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .sidenav-header span {
@@ -32,9 +34,9 @@
 
 .sidenav-links {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 0.5rem;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   flex: 1;
 }
 
@@ -52,15 +54,14 @@
 }
 
 .sidenav-links a.active {
-  background: #290543;
-  color: white;
+  background: #4490bc;
   font-weight: bold;
 }
 
-/* Footer med logout */
 .sidenav-footer {
-  border-top: 1px solid #ddd;
-  padding: 1rem;
+  margin-left: auto;
+  border-left: 1px solid #ddd;
+  padding: 0.5rem 1rem;
 }
 
 .sidenav-footer button {
@@ -77,42 +78,4 @@
 
 .sidenav-footer button:hover {
   background: #e6f2ff;
-}
-
-@media (max-width: 768px) {
-  .sidenav {
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    border-right: none;
-    border-bottom: 1px solid #ddd;
-  }
-
-  .sidenav-header {
-    flex-direction: row;
-    padding: 0.5rem 1rem;
-    border-bottom: none;
-    border-right: 1px solid #ddd;
-    margin-right: 1rem;
-  }
-
-  .sidenav-header img {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 0;
-    margin-right: 0.5rem;
-  }
-
-  .sidenav-links {
-    flex-direction: row;
-    padding: 0.5rem 1rem;
-    gap: 0.5rem;
-  }
-
-  .sidenav-footer {
-    margin-left: auto;
-    border-top: none;
-    border-left: 1px solid #ddd;
-    padding: 0.5rem 1rem;
-  }
 }
