@@ -1,7 +1,8 @@
+// src/components/SideNav.jsx
 import { useAuth } from '../context/AuthContext'
 import { useNavigate, NavLink } from 'react-router-dom'
-import './SideNav.css'
 import * as Sentry from '@sentry/react'
+import './SideNav.css'
 
 export default function SideNav() {
   const { user, logout } = useAuth()
@@ -9,11 +10,7 @@ export default function SideNav() {
 
   const handleLogout = async () => {
     await logout()
-    Sentry.addBreadcrumb({
-      category: 'auth',
-      message: 'logout click',
-      level: 'info'
-    })
+    Sentry.addBreadcrumb({ category: 'auth', message: 'logout click', level: 'info' })
     navigate('/login')
   }
 
@@ -21,12 +18,17 @@ export default function SideNav() {
     <aside className="sidenav">
       <div className="sidenav-header">
         <img src={user?.avatar || 'https://i.pravatar.cc/100'} alt="Avatar" />
-        <span>{user?.username}</span>
+        <span>{user?.username || 'User'}</span>
       </div>
+
       <nav className="sidenav-links">
         <NavLink to="/profile">👤 Profile</NavLink>
-        <button onClick={handleLogout}>🚪 Logout</button>
+        <NavLink to="/chat">💬 Chat</NavLink> 
       </nav>
+
+      <div className="sidenav-footer">
+        <button onClick={handleLogout}>🚪 Logout</button>
+      </div>
     </aside>
   )
 }

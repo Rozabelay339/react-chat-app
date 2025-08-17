@@ -43,20 +43,8 @@ export default function Login() {
   return (
     <form onSubmit={handleLogin} className="login-form">
       <h2>Logga in</h2>
-      <input
-        type="text"
-        placeholder="Användarnamn"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Lösenord"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
+      <input type="text" placeholder="Användarnamn" value={username} onChange={(e) => setUsername(e.target.value)} required />
+      <input type="password" placeholder="Lösenord" value={password} onChange={(e) => setPassword(e.target.value)} required />
       <button type="submit">Logga in</button>
       {feedback && <p className="feedback">{feedback}</p>}
     </form>

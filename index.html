@@ -1,19 +1,16 @@
 <!doctype html>
-<html lang="en">
+<html lang="sv">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' https://i.pravatar.cc https://freeimage.host data:; connect-src 'self' https://chatify-api.up.railway.app https://*.ingest.sentry.io https://*.sentry.io; script-src 'self'; style-src 'self' 'unsafe-inline';"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>React Chat App</title>
-    <meta http-equiv="Content-Security-Policy" content="
-      default-src 'self';
-      img-src 'self' https://i.pravatar.cc https://freeimage.host;
-      style-src 'self' 'unsafe-inline';
-      connect-src *;">
+    <title>Chatify Client</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
-

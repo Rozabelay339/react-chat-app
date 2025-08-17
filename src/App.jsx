@@ -1,3 +1,4 @@
+import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Register from './pages/Register'
 import Login from './pages/Login'
@@ -6,30 +7,38 @@ import Profile from './pages/Profile'
 import SideNav from './components/SideNav'
 import { useAuth } from './context/AuthContext'
 
-function App() {
+function ProtectedRoute({ children }) {
   const { user } = useAuth()
+  if (!user) return <Navigate to="/login" replace />
+  return children
+}
 
-  const ProtectedRoute = ({ children }) => {
-    if (!user) return <Navigate to="/login" replace />
-    return (
-      <div className="flex">
-        <SideNav />
-        <div className="flex-1 p-4">{children}</div>
-      </div>
-    )
-  }
-
+export default function App() {
+  const { user } = useAuth()
   return (
     <Router>
+      {user && <SideNav />}
       <Routes>
-        <Route path="/register" element={!user ? <Register /> : <Navigate to="/chat" replace />} />
-        <Route path="/login" element={!user ? <Login /> : <Navigate to="/chat" replace />} />
-        <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/register" element={!user ? <Register /> : <Navigate to="/chat" />} />
+        <Route path="/login" element={!user ? <Login /> : <Navigate to="/chat" />} />
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute>
+              <Chat />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<Navigate to={user ? '/chat' : '/login'} replace />} />
       </Routes>
     </Router>
   )
 }
-
-export default App

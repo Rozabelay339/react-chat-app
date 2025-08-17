@@ -38,22 +38,16 @@
   flex: 1;
 }
 
-.sidenav-links a,
-.sidenav-links button {
+.sidenav-links a {
   display: block;
   padding: 0.6rem;
-  text-align: left;
-  border: none;
-  background: none;
-  font-size: 0.95rem;
   border-radius: 6px;
-  cursor: pointer;
   text-decoration: none;
   color: #333;
+  font-size: 0.95rem;
 }
 
-.sidenav-links a:hover,
-.sidenav-links button:hover {
+.sidenav-links a:hover {
   background: #e6f2ff;
 }
 
@@ -63,8 +57,26 @@
   font-weight: bold;
 }
 
-.sidenav-links button {
+/* Footer med logout */
+.sidenav-footer {
+  border-top: 1px solid #ddd;
+  padding: 1rem;
+}
+
+.sidenav-footer button {
+  width: 100%;
+  padding: 0.6rem;
+  border: none;
+  background: none;
+  color: #333;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
   text-align: left;
+}
+
+.sidenav-footer button:hover {
+  background: #e6f2ff;
 }
 
 @media (max-width: 768px) {
@@ -93,14 +105,14 @@
 
   .sidenav-links {
     flex-direction: row;
+    padding: 0.5rem 1rem;
     gap: 0.5rem;
+  }
+
+  .sidenav-footer {
+    margin-left: auto;
+    border-top: none;
+    border-left: 1px solid #ddd;
     padding: 0.5rem 1rem;
   }
-
-  .sidenav-links a,
-  .sidenav-links button {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.9rem;
-  }
 }
-
