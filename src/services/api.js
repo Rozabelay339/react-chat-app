@@ -80,12 +80,13 @@ updateUser: (token, userId, { username, email, avatar }) => {
   requireToken(token)
   return axiosInstance.put(
     '/user',
-    { userId, username, email, avatar }, 
+    {
+      userId,
+      updatedData: { username, email, avatar }
+    },
     { headers: { Authorization: `Bearer ${token}` } }
   )
 },
-
-
 
 
   deleteUser: (token, userId) => {

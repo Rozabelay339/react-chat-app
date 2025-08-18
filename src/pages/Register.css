@@ -50,7 +50,7 @@ img {
 
 button {
   padding: 0.8rem 1rem;
-  background-color: #4a90e2;
+  background-color: #284669;
   border: none;
   border-radius: 5px;
   color: white;
@@ -64,7 +64,7 @@ button:hover {
 }
 
 p {
-  color: red;
+  color: rgb(136, 49, 49);
   font-size: 0.9rem;
   text-align: center;
   margin-top: 0.5rem;

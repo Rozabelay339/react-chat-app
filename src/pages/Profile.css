@@ -28,8 +28,15 @@
 }
 
 .avatar-preview {
-  width: 80px;
-  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.avatar-preview img {
+  width: 100px;
+  height: 100px;
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid #ccc;
@@ -61,6 +68,28 @@
   cursor: not-allowed;
 }
 
+.danger-zone {
+  margin-top: 24px;
+}
+
+.danger-zone h3 {
+  color: crimson;
+}
+
+.delete-btn {
+  background: crimson;
+  color: #fff;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.delete-btn:hover {
+  background: darkred;
+}
+
 .feedback {
   margin-top: 0.5rem;
   padding: 0.5rem;
@@ -68,4 +97,3 @@
   border-left: 4px solid #ccc;
   border-radius: 4px;
 }
-

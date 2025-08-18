@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import * as Sentry from '@sentry/react';
 import './Chat.css';
 
+
 function sanitize(str) {
   return String(str)
     .replace(/[<>]/g, (m) => (m === '<' ? '&lt;' : '&gt;'))
@@ -19,7 +20,9 @@ export default function Chat() {
   const [text, setText] = useState('');
   const [inviteUserId, setInviteUserId] = useState('');
   const [feedback, setFeedback] = useState('');
-  const [userCache, setUserCache] = useState({});
+  const [userCache, setUserCache] = useState({}); 
+  const [conversations, setConversations] = useState([]);
+  const [invites, setInvites] = useState([]); 
 
   const prevInvitesRef = useRef([]);
 
@@ -27,25 +30,53 @@ export default function Chat() {
     if (userCache[userId]) return userCache[userId];
     try {
       const res = await api.getUser(token, userId);
-      const username = res.data.username;
+      const userData = Array.isArray(res.data) ? res.data[0] : res.data;
+      const username = userData?.username || `User ${userId}`;
       setUserCache((prev) => ({ ...prev, [userId]: username }));
       return username;
     } catch (err) {
       Sentry.captureException(err);
-      return userId;
+      return `User ${userId}`;
     }
   };
+
+
+  const fetchConversations = async () => {
+    if (!token) return;
+    try {
+      const res = await api.getConversations(token);
+      const { invitesReceived = [], invitesSent = [], participating = [] } = res.data || {};
+
+
+      setInvites(invitesReceived);
+      const allConvos = [...new Set([...invitesReceived, ...invitesSent, ...participating])];
+      setConversations(allConvos);
+
+
+      if (!activeId && allConvos.length > 0) {
+        setActiveId(allConvos[0]);
+      }
+    } catch (err) {
+      setFeedback('Kunde inte hämta konversationer');
+      Sentry.captureException(err);
+    }
+  };
+
 
   const fetchMessages = async () => {
     if (!token || !activeId) return;
     try {
       const res = await api.getMessages(token, activeId);
       const msgs = Array.isArray(res.data) ? res.data : [];
+
+
       for (const m of msgs) {
         if (!userCache[m.userId]) {
           await fetchUser(m.userId);
         }
       }
+
+
       setMessages(msgs);
     } catch (err) {
       setFeedback('Kunde inte hämta meddelanden');
@@ -53,20 +84,22 @@ export default function Chat() {
     }
   };
 
+
+  useEffect(() => {
+    fetchConversations();
+  }, [token]);
+
+
   useEffect(() => {
     if (activeId) fetchMessages();
   }, [activeId]);
 
-  useEffect(() => {
-    if (!activeId && Array.isArray(user?.invites) && user.invites.length > 0) {
-      setActiveId(user.invites[0]);
-    }
-  }, [user, activeId]);
 
   useEffect(() => {
-    if (Array.isArray(user?.invites)) {
+    if (Array.isArray(invites)) {
       const prevInvites = prevInvitesRef.current;
-      const newOnes = user.invites.filter((id) => !prevInvites.includes(id));
+      const newOnes = invites.filter((id) => !prevInvites.includes(id));
+
 
       if (newOnes.length > 0) {
         const latestInvite = newOnes[newOnes.length - 1];
@@ -74,9 +107,11 @@ export default function Chat() {
         setFeedback(`Ny inbjudan mottagen – ansluter till ${latestInvite}`);
       }
 
-      prevInvitesRef.current = user.invites;
+
+      prevInvitesRef.current = invites;
     }
-  }, [user?.invites]);
+  }, [invites]);
+
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -92,6 +127,7 @@ export default function Chat() {
     }
   };
 
+
   const handleDelete = async (msgId) => {
     try {
       await api.deleteMessage(token, msgId);
@@ -101,6 +137,7 @@ export default function Chat() {
       Sentry.captureException(err);
     }
   };
+
 
   const handleInvite = async () => {
     if (!inviteUserId || !activeId) return;
@@ -114,29 +151,59 @@ export default function Chat() {
     }
   };
 
+
+  const getConversationLabel = (convId) => {
+    if (!convId) return 'Okänd konversation';
+    const otherMsg = messages.find(
+      (m) => String(m.conversationId) === String(convId) && String(m.userId) !== String(user?.id)
+    );
+    if (otherMsg && userCache[otherMsg.userId]) {
+      return userCache[otherMsg.userId];
+    }
+    return `Konversation ${convId.slice(0, 8)}…`;
+  };
+
+
+  const getInviteLabel = (inviteId) => {
+    if (!inviteId) return 'Okänd inbjudan';
+    const inviter = userCache[inviteId];
+    return inviter || `Inbjudan från användare ${inviteId}`;
+  };
+
+
   return (
     <div className="chat-page">
       <aside className="conversations">
-        <h3>Konversation</h3>
-        <input
-          placeholder="Skriv eller klistra in conversationId"
-          value={activeId}
-          onChange={(e) => setActiveId(e.target.value)}
-        />
+        <h3>Konversationer</h3>
+        <ul>
+          {conversations.map((id) => (
+            <li key={id}>
+              <button
+                className={id === activeId ? 'active conversation-btn' : 'conversation-btn'}
+                onClick={() => setActiveId(id)}
+              >
+                {getConversationLabel(id)}
+              </button>
+            </li>
+          ))}
+          {conversations.length === 0 && <li>Inga konversationer ännu.</li>}
+        </ul>
 
-        {Array.isArray(user?.invites) && user.invites.length > 0 && (
+
+        {invites.length > 0 && (
           <div className="invites-list">
             <h4>Mina inbjudningar</h4>
             <ul>
-              {user.invites.map((id) => (
+              {invites.map((id) => (
                 <li key={id}>
-                  {id}
+                  {getInviteLabel(id)}
                   <button onClick={() => setActiveId(id)}>Anslut</button>
                 </li>
               ))}
             </ul>
           </div>
         )}
+
 
         {activeId && (
           <div className="invite">
@@ -150,23 +217,26 @@ export default function Chat() {
         )}
       </aside>
 
+
       <section className="chat">
         {!activeId && <p>Välj eller ange en konversation för att börja.</p>}
+
 
         {activeId && (
           <>
             <div className="messages-list">
               {messages.map((m) => {
                 const senderName =
-                  m.userId === user?.id
+                  String(m.userId) === String(user?.id)
                     ? user?.username
-                    : userCache[m.userId] || m.userId;
+                    : userCache[m.userId] || `User ${m.userId}`;
+
 
                 return (
                   <div
                     key={m.id}
                     className={`message-row ${
-                      m.userId === user?.id ? 'own' : 'other'
+                      String(m.userId) === String(user?.id) ? 'own' : 'other'
                     }`}
                   >
                     <div className="bubble">
@@ -174,7 +244,7 @@ export default function Chat() {
                       <div
                         dangerouslySetInnerHTML={{ __html: sanitize(m.text) }}
                       />
-                      {m.userId === user?.id && (
+                      {String(m.userId) === String(user?.id) && (
                         <button onClick={() => handleDelete(m.id)}>🗑️</button>
                       )}
                     </div>
@@ -183,6 +253,7 @@ export default function Chat() {
               })}
               {messages.length === 0 && <p>Inga meddelanden</p>}
             </div>
+
 
             <form onSubmit={handleSend} className="send-form">
               <input
@@ -195,8 +266,11 @@ export default function Chat() {
           </>
         )}
 
+
         {feedback && <p className="feedback">{feedback}</p>}
       </section>
     </div>
   );
 }
+
+
