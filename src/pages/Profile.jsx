@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../services/api'
 import * as Sentry from '@sentry/react'
-import './Profile.css'
+import './Profile.css';
 
 export default function Profile() {
   const { user, logout, setUser } = useAuth()
