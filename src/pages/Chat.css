@@ -1,176 +1,229 @@
+
 .chat-page {
   display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: #f3f4f5;
+  height: calc(100vh - 60px); 
   font-family: Arial, sans-serif;
-  padding: 1rem;
 }
 
+
+
 .conversations {
-  width: 100%;
-  background: #f3f4f5;
-  border-bottom: 1px solid #ddd;
+  width: 300px;
+  background-color: #f7fafd;
+  border-right: 1px solid #ccc;
   padding: 1rem;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
 }
 
-.conversations h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1.1rem;
+
+.conversations h3,
+.conversations h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #3086b8;
 }
 
+
+/* Konversationslista */
 .conversations ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.conversations li {
-  margin-bottom: 0.5rem;
-}
 
 .conversation-btn {
+  display: block;
   width: 100%;
+  padding: 0.5rem;
+  border: none;
+  background: #fff;
+  border-radius: 6px;
+  margin-bottom: 0.3rem;
+  cursor: pointer;
   text-align: left;
+  color: #333;
+  border: 1px solid #ddd;
 }
 
-.invites-list {
-  margin-top: 1rem;
+
+.conversation-btn:hover {
+  background: #e6f2ff;
 }
 
-.invites-list h4 {
-  margin: 0.5rem 0;
-  font-size: 1rem;
+
+.conversation-btn.active {
+  background-color: #4490bc;
+  color: white;
+  font-weight: bold;
 }
 
-.invites-list ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
 
-.invites-list li {
-  margin-bottom: 0.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.invite {
-  margin-top: auto;
-  display: flex;
-  gap: 0.5rem;
-}
-
-.invite input {
-  flex: 1;
-  padding: 0.4rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
+/* Chatsektion */
 .chat {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 0.5rem;
+  padding: 1rem;
+  background-color: #fff;
+  overflow-y: hidden;
 }
 
+
+/* Meddelandelista */
 .messages-list {
   flex: 1;
   overflow-y: auto;
-  padding: 0.5rem;
-  background: #f0f0f0;
-  border-radius: 8px;
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-right: 1rem;
 }
 
+
+/* Meddelanderad */
 .message-row {
   display: flex;
-  margin-bottom: 0.8rem;
 }
+
 
 .message-row.own {
   justify-content: flex-end;
 }
 
+
 .message-row.other {
   justify-content: flex-start;
 }
 
+
+/* Bubbla */
 .bubble {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 90%;
+  max-width: 60%;
+  padding: 0.75rem;
   border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  background-color: #f1f1f1;
+  position: relative;
   word-wrap: break-word;
-  padding: 0.5rem 1rem;
-  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.bubble .message-content {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
 
 .message-row.own .bubble {
-  background: #d1dfe7;
-  margin-bottom: 1rem;
+  background-color: #d1e7ff;
+  color: #000;
+  text-align: right;
 }
+
 
 .bubble strong {
-  display: block;
   font-size: 0.85rem;
   color: #333;
-  margin-bottom: 1rem;
+  display: block;
+  margin-bottom: 0.3rem;
+  padding-right: 50px; /* gör plats för knappen */
 }
+
 
 .bubble button {
-  background: transparent;
+  background: none;
   border: none;
-  color: #666;
+  position: absolute;
+  top: 10px;
+  right: 8px;
   cursor: pointer;
-  font-size: 0.8rem;
-  padding: 0;
+  color: #888;
 }
+
+
+
 
 .bubble button:hover {
-  color: rgb(18, 56, 91);
+  color: red;
 }
 
+
+/* Meddelandeformulär */
 .send-form {
   display: flex;
   gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
 }
+
 
 .send-form input {
   flex: 1;
-  padding: 0.6rem;
+  padding: 0.75rem;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 6px;
+  font-size: 1rem;
 }
 
-button {
-  background: #3086b8;
+
+.send-form button {
+  padding: 0.75rem 1rem;
+  background-color: #3086b8;
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+
+.send-form button:hover {
+  background-color: #246990;
+}
+
+
+/* Feedback */
+.feedback {
+  margin-top: 0.5rem;
+  color: #d9534f;
+  font-weight: bold;
+}
+
+
+/* Inbjudningar & ny konversation */
+.invites-list ul,
+.new-convo,
+.invite {
+  margin-top: 1rem;
+}
+
+
+.invites-list button,
+.new-convo button,
+.invite button {
+  margin-top: 0.3rem;
+  margin-right: 0.3rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
+  background-color: #3086b8;
+  color: white;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
 }
 
-button:hover {
-  background: #5eacd9;
+
+.invites-list button:hover,
+.new-convo button:hover,
+.invite button:hover {
+  background-color: #246990;
 }
 
-.feedback {
-  margin-top: 0.5rem;
-  color: #4f6fd9;
+
+.new-convo input,
+.invite input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #bbb;
+  border-radius: 4px;
   font-size: 0.9rem;
 }
+
