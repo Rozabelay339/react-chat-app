@@ -195,8 +195,7 @@ export default function Chat() {
           </>
         )}
         {feedback && <p className="feedback">{feedback}</p>}
-      </section>å'''
-      ¨
+      </section>
     </div>
   );
 }
